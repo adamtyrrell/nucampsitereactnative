@@ -3,8 +3,7 @@ import { Text, View, ScrollView, FlatList, Modal, Button, StyleSheet, Alert, Pan
 import { Card, Icon, Rating, Input } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
-import { postFavorite } from '../redux/ActionCreators';
-import { postComment } from '../redux/ActionCreators';
+import { postFavorite, postComment } from '../redux/ActionCreators';
 import * as Animatable from 'react-native-animatable';
 
 
@@ -30,6 +29,7 @@ function RenderCampsite(props) {
     const view = React.createRef();
 
     const recognizeDrag = ({dx}) => (dx < -200) ? true : false;
+    const recognizeComment = ({dx}) => (dx > 200) ? true : false;
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
@@ -57,6 +57,9 @@ function RenderCampsite(props) {
                     ],
                     { cancelable: false }
                 );
+            }
+            else if(recognizeComment(gestureState)){
+                props.onShowModal();
             }
             return true;
         }
@@ -147,8 +150,6 @@ class CampsiteInfo extends Component {
         this.toggleModal();
     }
 
-    // TYPO: 
-    // OLD CODE: resetFrom() {
     resetForm() {
         this.setState({
             rating:'5',
@@ -211,8 +212,6 @@ class CampsiteInfo extends Component {
                             <Button 
                                 onPress={() => {
                                     this.handleComment(campsiteId);
-                                    // TYPO:
-                                    // OLD CODE: this.resetFrom();
                                     this.resetForm();
                                 }}
                                 color= "#5637DD"
@@ -223,9 +222,7 @@ class CampsiteInfo extends Component {
                             <Button 
                                 onPress={() => {
                                     this.toggleModal();
-                                    // FIX 1: The assignment asks for you to reset the form on a cancel request as well.
                                     this.resetForm();
-                                    // END FIX 1
                                 }}
                                 color= "#808080"
                                 title='Cancel'
